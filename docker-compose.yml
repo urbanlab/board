@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  eraboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: erasme/eraboard:latest
+    container_name: eraboard
+    restart: always
+
