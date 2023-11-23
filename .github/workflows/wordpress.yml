@@ -34,7 +34,7 @@ jobs:
           tags: erasme/eraboard-wordpress:${{ github.ref == 'refs/heads/main' && 'latest' || 'dev' }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
-          target: templates/wordpress
+          context: templates/wordpress
 
       - name: Move cache
         run: |
