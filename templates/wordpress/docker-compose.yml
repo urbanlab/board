@@ -4,24 +4,44 @@ services:
     build:
       context: .
     environment:
-      - WP_ENV="${WP_ENV:}"
-      - WP_HOME="${WP_HOME:-http://localhost:${EXPOSED_WORDPRESS_PORT}}"
-      - WP_SITEURL="${WP_SITEURL:-http://localhost:${EXPOSED_WORDPRESS_PORT}/wp}"
-      - DATABASE_URL="${DATABASE_URL:-mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}}"
+      - WP_ENV=$${WP_ENV:}
+      - WP_HOME=${WP_HOME:-http://localhost:${EXPOSED_WORDPRESS_PORT}}
+      - WP_SITEURL=${WP_SITEURL:-http://localhost:${EXPOSED_WORDPRESS_PORT}/wp}
+      - DATABASE_URL=${DATABASE_URL:-mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}}
     volumes:
       - ./bedrock/web:/var/www/html/bedrock/web
     ports:
       - ${EXPOSED_WORDPRESS_PORT:-8080}:80
+    depends_on:
+      - mysql
+    networks:
+      - board-bedrock-network
   mysql:
     image: mysql:latest
     environment:
-      - MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:-wordpress}"
-      - MYSQL_DATABASE="${MYSQL_DATABASE:-wordpress}"
-      - MYSQL_USER="${MYSQL_USER:-wordpress}"
-      - MYSQL_PASSWORD="${MYSQL_PASSWORD:-wordpress}"
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-wordpress}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-wordpress}
+      - MYSQL_USER=${MYSQL_USER:-wordpress}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-wordpress}
     volumes:
       - ./db:/var/lib/mysql
-  # Echo all vars to the console
-  echo:
-    image: bash:latest
-    command: echo "WP_ENV=$W
+    networks:
+      - board-bedrock-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - PMA_USER=${MYSQL_USER:-wordpress}
+      - PMA_PASSWORD=${MYSQL_PASSWORD:-wordpress}
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - board-bedrock-network
+
+networks:
+  board-bedrock-network:
+    driver: bridge
