@@ -35,6 +35,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           context: ./templates/wordpress
+          file: ./templates/wordpress/Dockerfile
 
       - name: Move cache
         run: |
