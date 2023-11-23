@@ -1,10 +1,12 @@
 version: '3'
 services:
-  apache:
+  apache-dev:
+    profiles:
+      - dev 
     build:
       context: .
     environment:
-      - WP_ENV=$${WP_ENV:}
+      - WP_ENV=${WP_ENV:-development}
       - WP_HOME=${WP_HOME:-http://localhost:${EXPOSED_WORDPRESS_PORT}}
       - WP_SITEURL=${WP_SITEURL:-http://localhost:${EXPOSED_WORDPRESS_PORT}/wp}
       - DATABASE_URL=${DATABASE_URL:-mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}}
@@ -14,9 +16,27 @@ services:
       - ${EXPOSED_WORDPRESS_PORT:-8080}:80
     depends_on:
       - mysql
-    networks:
-      - board-bedrock-network
+
+  apache-prod:
+    profiles:
+      - prod 
+    build:
+      context: .
+    environment:
+      - WP_ENV=$${WP_ENV:-production}
+      - WP_HOME=${WP_HOME:-http://localhost:${EXPOSED_WORDPRESS_PORT}}
+      - WP_SITEURL=${WP_SITEURL:-http://localhost:${EXPOSED_WORDPRESS_PORT}/wp}
+      - DATABASE_URL=${DATABASE_URL:-mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}}
+    ports:
+      - ${EXPOSED_WORDPRESS_PORT:-8080}:80
+    depends_on:
+      - mysql
+
+
   mysql:
+    profiles:
+      - dev 
+      - prod
     image: mysql:latest
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-wordpress}
@@ -25,10 +45,10 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:-wordpress}
     volumes:
       - ./db:/var/lib/mysql
-    networks:
-      - board-bedrock-network
 
   phpmyadmin:
+    profiles:
+      - dev 
     image: phpmyadmin/phpmyadmin
     environment:
       - PMA_HOST=mysql
@@ -39,9 +59,3 @@ services:
       - "8081:80"
     depends_on:
       - mysql
-    networks:
-      - board-bedrock-network
-
-networks:
-  board-bedrock-network:
-    driver: bridge

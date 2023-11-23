@@ -10,3 +10,5 @@ COPY ./apache/vhost.conf /etc/apache2/sites-available/000-default.conf
 
 COPY ./bedrock /var/www/html/bedrock
 RUN chown -R www-data:www-data /var/www/html/
+
+ENTRYPOINT [ "apache2-foreground" ]
