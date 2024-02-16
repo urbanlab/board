@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_httpauth import HTTPBasicAuth
-from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import random
 API_PASSWORD = os.environ.get('API_PASSWORD')
@@ -29,8 +28,7 @@ def mypet(name):
     emojis = ["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸","🐵","🐔","🐧"]
     random_emoji = random.choice(emojis)
 
-    #return f"{random_emoji} {name}"
     return {
-        "pet": name,
-        "name": random_emoji
+        "name": name,
+        "emoji": random_emoji
     }
