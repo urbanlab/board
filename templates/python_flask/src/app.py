@@ -22,11 +22,15 @@ def hello_world():
 
 
 # APi example route returning pet param from query string
-@app.route("/api/v1/myPet/<name>", methods=['GET'])
+@app.route("/api/v1/mypet/<name>", methods=['GET'])
 @auth.login_required
 def mypet(name):
 
     emojis = ["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸","🐵","🐔","🐧"]
     random_emoji = random.choice(emojis)
 
-    return f"{random_emoji} {name}"
+    #return f"{random_emoji} {name}"
+    return {
+        "pet": name,
+        "name": random_emoji
+    }
